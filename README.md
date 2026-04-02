@@ -168,92 +168,18 @@ DISCORD_GUILD_ID=your_server_id
 DISCORD_CHANNEL_ID=your_channel_id
 ```
 
-### 3. Configure OpenClaw
-
-OpenClaw reads its config from `~/.openclaw/openclaw.json`. Create it:
+### 3. Set up OpenClaw
 
 ```bash
-mkdir -p ~/.openclaw
+npm run setup
 ```
 
-Write the config (replace the placeholder values with your actual IDs):
-
-```json
-{
-  "gateway": {
-    "mode": "local",
-    "auth": {
-      "mode": "token",
-      "token": "any-local-token"
-    }
-  },
-  "agents": {
-    "defaults": {
-      "workspace": "/absolute/path/to/this/repo/workspace",
-      "model": {
-        "primary": "openrouter/qwen/qwen3-coder:free",
-        "fallbacks": [
-          "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
-          "openrouter/meta-llama/llama-3.3-70b-instruct:free"
-        ]
-      },
-      "heartbeat": {
-        "every": "30m"
-      }
-    },
-    "list": [
-      { "id": "main", "default": true }
-    ]
-  },
-  "models": {
-    "mode": "merge",
-    "providers": {
-      "openrouter": {
-        "apiKey": "${OPENROUTER_API_KEY}",
-        "baseUrl": "https://openrouter.ai/api/v1",
-        "models": []
-      }
-    }
-  },
-  "channels": {
-    "discord": {
-      "enabled": true,
-      "token": "${DISCORD_BOT_TOKEN}",
-      "dm": { "enabled": true },
-      "groupPolicy": "allowlist",
-      "guilds": {
-        "YOUR_GUILD_ID": {
-          "requireMention": false,
-          "channels": {
-            "YOUR_CHANNEL_ID": { "allow": true }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-Write your credentials where OpenClaw can find them:
-
-```bash
-cat > ~/.openclaw/.env << EOF
-DISCORD_BOT_TOKEN=your_bot_token
-OPENROUTER_API_KEY=your_openrouter_key
-EOF
-chmod 600 ~/.openclaw/.env
-```
+This reads your `.env` and writes the config to `~/.openclaw/openclaw.json` (the standard OpenClaw config location), pointing the workspace to this project's `workspace/` directory.
 
 ### 4. Start the bot
 
 ```bash
-npx openclaw gateway start
-```
-
-Or run in foreground for debugging:
-
-```bash
-npx openclaw gateway run --verbose
+npm start
 ```
 
 ### 5. Verify
