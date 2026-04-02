@@ -4,8 +4,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git curl jq \
     && rm -rf /var/lib/apt/lists/*
 
-# Install OpenClaw globally (this is the only runtime dependency)
-RUN npm install -g openclaw@latest
+# Install OpenClaw globally with Discord dependencies
+RUN npm install -g openclaw@latest @buape/carbon @discordjs/core
 
 WORKDIR /app
 
