@@ -38,7 +38,7 @@ cat > ~/.openclaw/openclaw.json << JSONEOF
     "defaults": {
       "workspace": "$WORKSPACE_DIR",
       "model": {
-        "primary": "openai/gpt-5.4-nano"
+        "primary": "openai/gpt-5.4-mini"
       },
       "heartbeat": {
         "every": "30m"

@@ -67,7 +67,7 @@ graph TB
     end
 
     subgraph External
-        LLM[OpenAI API<br/>gpt-5.4-nano]
+        LLM[OpenAI API<br/>gpt-5.4-mini]
     end
 
     Owner <-->|Messages| Channel

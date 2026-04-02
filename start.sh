@@ -51,7 +51,7 @@ cat > "$OPENCLAW_HOME/openclaw.json" << JSONEOF
     "defaults": {
       "workspace": "/app/workspace",
       "model": {
-        "primary": "openai/gpt-5.4-nano"
+        "primary": "openai/gpt-5.4-mini"
       },
       "heartbeat": {
         "every": "30m"
@@ -110,7 +110,7 @@ chmod 600 "$OPENCLAW_HOME/.env"
 
 echo "✓ Config written to $OPENCLAW_HOME/openclaw.json"
 echo "✓ Workspace: /app/workspace"
-echo "✓ Model: openai/gpt-5.4-nano"
+echo "✓ Model: openai/gpt-5.4-mini"
 echo "✓ Gateway port: ${PORT:-18789}"
 echo "✓ Starting OpenClaw gateway..."
 
