@@ -4,7 +4,7 @@
   "description": "A Discord bot built on OpenClaw that develops a genuine relationship with its owner through natural conversation",
   "main": "index.ts",
   "scripts": {
-    "start": "openclaw",
+    "start": "openclaw gateway",
     "setup": "bash setup-local.sh",
     "test": "jest"
   },
