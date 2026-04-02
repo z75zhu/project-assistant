@@ -5,7 +5,7 @@ echo "🦞 Discord Relationship Bot — Starting on Railway"
 
 # Debug: show which env vars are set (values masked)
 echo "DEBUG: DISCORD_BOT_TOKEN is $([ -n "$DISCORD_BOT_TOKEN" ] && echo 'SET' || echo 'EMPTY')"
-echo "DEBUG: OPENROUTER_API_KEY is $([ -n "$OPENROUTER_API_KEY" ] && echo 'SET' || echo 'EMPTY')"
+echo "DEBUG: OPENAI_API_KEY is $([ -n "$OPENAI_API_KEY" ] && echo 'SET' || echo 'EMPTY')"
 echo "DEBUG: DISCORD_GUILD_ID is $([ -n "$DISCORD_GUILD_ID" ] && echo 'SET' || echo 'EMPTY')"
 echo "DEBUG: DISCORD_CHANNEL_ID is $([ -n "$DISCORD_CHANNEL_ID" ] && echo 'SET' || echo 'EMPTY')"
 echo "DEBUG: PORT is ${PORT:-not set}"
@@ -15,7 +15,7 @@ echo "DEBUG: Total env var count: $(env | wc -l)"
 # Validate required env vars
 MISSING=""
 [ -z "$DISCORD_BOT_TOKEN" ] && MISSING="$MISSING DISCORD_BOT_TOKEN"
-[ -z "$OPENROUTER_API_KEY" ] && MISSING="$MISSING OPENROUTER_API_KEY"
+[ -z "$OPENAI_API_KEY" ] && MISSING="$MISSING OPENAI_API_KEY"
 [ -z "$DISCORD_GUILD_ID" ] && MISSING="$MISSING DISCORD_GUILD_ID"
 [ -z "$DISCORD_CHANNEL_ID" ] && MISSING="$MISSING DISCORD_CHANNEL_ID"
 
@@ -51,11 +51,7 @@ cat > "$OPENCLAW_HOME/openclaw.json" << JSONEOF
     "defaults": {
       "workspace": "/app/workspace",
       "model": {
-        "primary": "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
-        "fallbacks": [
-          "openrouter/meta-llama/llama-3.3-70b-instruct:free",
-          "openrouter/google/gemma-3-27b-it:free"
-        ]
+        "primary": "openai/gpt-5.4-nano"
       },
       "heartbeat": {
         "every": "30m"
@@ -76,9 +72,9 @@ cat > "$OPENCLAW_HOME/openclaw.json" << JSONEOF
   "models": {
     "mode": "merge",
     "providers": {
-      "openrouter": {
-        "apiKey": "\${OPENROUTER_API_KEY}",
-        "baseUrl": "https://openrouter.ai/api/v1",
+      "openai": {
+        "apiKey": "\${OPENAI_API_KEY}",
+        "baseUrl": "https://api.openai.com/v1",
         "models": []
       }
     }
@@ -105,7 +101,7 @@ JSONEOF
 # Write env vars for OpenClaw to resolve at runtime
 cat > "$OPENCLAW_HOME/.env" << ENVEOF
 DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN
-OPENROUTER_API_KEY=$OPENROUTER_API_KEY
+OPENAI_API_KEY=$OPENAI_API_KEY
 ENVEOF
 
 chmod 700 "$OPENCLAW_HOME"
@@ -114,7 +110,7 @@ chmod 600 "$OPENCLAW_HOME/.env"
 
 echo "✓ Config written to $OPENCLAW_HOME/openclaw.json"
 echo "✓ Workspace: /app/workspace"
-echo "✓ Model: qwen/qwen3-coder:free (with fallbacks)"
+echo "✓ Model: openai/gpt-5.4-nano"
 echo "✓ Gateway port: ${PORT:-18789}"
 echo "✓ Starting OpenClaw gateway..."
 

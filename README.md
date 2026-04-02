@@ -67,7 +67,7 @@ graph TB
     end
 
     subgraph External
-        LLM[OpenRouter API<br/>qwen3-coder / llama-3.3]
+        LLM[OpenAI API<br/>gpt-5.4-nano]
     end
 
     Owner <-->|Messages| Channel
@@ -127,7 +127,7 @@ discord-relationship-bot/
 
 - [Node.js](https://nodejs.org/) 22+ (for local development)
 - A Discord bot token ([Developer Portal](https://discord.com/developers/applications))
-- An OpenRouter API key ([openrouter.ai/keys](https://openrouter.ai/keys) — free tier available)
+- An OpenAI API key ([platform.openai.com/api-keys](https://platform.openai.com/api-keys))
 - A Discord server with the bot invited
 
 ### Create a Discord Bot
@@ -163,7 +163,7 @@ Edit `.env`:
 
 ```
 DISCORD_BOT_TOKEN=your_bot_token
-OPENROUTER_API_KEY=your_openrouter_key
+OPENAI_API_KEY=your_openai_key
 DISCORD_GUILD_ID=your_server_id
 DISCORD_CHANNEL_ID=your_channel_id
 ```
@@ -209,7 +209,7 @@ The repo includes a `Dockerfile` and `railway.json` for Railway deployment.
 | Variable | Description |
 |----------|-------------|
 | `DISCORD_BOT_TOKEN` | Bot token from Discord Developer Portal |
-| `OPENROUTER_API_KEY` | OpenRouter API key (free tier works) |
+| `OPENAI_API_KEY` | OpenAI API key |
 | `DISCORD_GUILD_ID` | Your Discord server ID |
 | `DISCORD_CHANNEL_ID` | Channel ID for the bot to operate in |
 

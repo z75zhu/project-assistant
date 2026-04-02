@@ -12,7 +12,7 @@ set -a; source .env; set +a
 
 MISSING=""
 [ -z "$DISCORD_BOT_TOKEN" ] || [ "$DISCORD_BOT_TOKEN" = "your_discord_bot_token_here" ] && MISSING="$MISSING DISCORD_BOT_TOKEN"
-[ -z "$OPENROUTER_API_KEY" ] || [ "$OPENROUTER_API_KEY" = "your_openrouter_api_key_here" ] && MISSING="$MISSING OPENROUTER_API_KEY"
+[ -z "$OPENAI_API_KEY" ] || [ "$OPENAI_API_KEY" = "your_openai_api_key_here" ] && MISSING="$MISSING OPENAI_API_KEY"
 [ -z "$DISCORD_GUILD_ID" ] || [ "$DISCORD_GUILD_ID" = "your_guild_id_here" ] && MISSING="$MISSING DISCORD_GUILD_ID"
 [ -z "$DISCORD_CHANNEL_ID" ] || [ "$DISCORD_CHANNEL_ID" = "your_channel_id_here" ] && MISSING="$MISSING DISCORD_CHANNEL_ID"
 
@@ -38,11 +38,7 @@ cat > ~/.openclaw/openclaw.json << JSONEOF
     "defaults": {
       "workspace": "$WORKSPACE_DIR",
       "model": {
-        "primary": "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
-        "fallbacks": [
-          "openrouter/meta-llama/llama-3.3-70b-instruct:free",
-          "openrouter/google/gemma-3-27b-it:free"
-        ]
+        "primary": "openai/gpt-5.4-nano"
       },
       "heartbeat": {
         "every": "30m"
@@ -63,9 +59,9 @@ cat > ~/.openclaw/openclaw.json << JSONEOF
   "models": {
     "mode": "merge",
     "providers": {
-      "openrouter": {
-        "apiKey": "\${OPENROUTER_API_KEY}",
-        "baseUrl": "https://openrouter.ai/api/v1",
+      "openai": {
+        "apiKey": "\${OPENAI_API_KEY}",
+        "baseUrl": "https://api.openai.com/v1",
         "models": []
       }
     }
@@ -91,7 +87,7 @@ JSONEOF
 
 cat > ~/.openclaw/.env << ENVEOF
 DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN
-OPENROUTER_API_KEY=$OPENROUTER_API_KEY
+OPENAI_API_KEY=$OPENAI_API_KEY
 ENVEOF
 
 chmod 700 ~/.openclaw
