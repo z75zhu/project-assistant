@@ -2,8 +2,8 @@
  * Outreach decision logic.
  *
  * Determines whether the bot should initiate proactive outreach based on:
- *   1. Stage-based minimum intervals (early: 4hr, developing: 8hr, established: 24hr)
- *   2. Backoff after ignored outreaches (12hr after 1, 48hr after 2+)
+ *   1. Base minimum interval: 30 minutes
+ *   2. Backoff after ignored outreaches (2hr after 1, 6hr after 2, 24hr after 3+)
  *   3. Whether there is meaningful owner context to motivate the outreach
  *
  * Requirements: 3.2, 3.3, 3.5, 3.6, 3.7
@@ -26,16 +26,16 @@ export interface OutreachDecision {
   nextEligibleAt: string;
 }
 
-const HOURS_MS = 60 * 60 * 1000;
+const MINUTES_MS = 60 * 1000;
+const HOURS_MS = 60 * MINUTES_MS;
 
-const STAGE_MINIMUM_HOURS: Record<RelationshipState["stage"], number> = {
-  early: 4,
-  developing: 8,
-  established: 24,
-};
+// Base interval: 30 minutes
+const BASE_MINIMUM_MS = 30 * MINUTES_MS;
 
-const BACKOFF_SINGLE_HOURS = 12;
-const BACKOFF_CONSECUTIVE_HOURS = 48;
+// Backoff tiers
+const BACKOFF_1_IGNORED_MS = 2 * HOURS_MS;
+const BACKOFF_2_IGNORED_MS = 6 * HOURS_MS;
+const BACKOFF_3_PLUS_IGNORED_MS = 24 * HOURS_MS;
 
 export function decideOutreach(input: {
   relationshipState: RelationshipState;
@@ -67,14 +67,16 @@ export function decideOutreach(input: {
   const elapsed = now - lastOutreach;
 
   // Determine the effective minimum interval
-  let minimumMs = STAGE_MINIMUM_HOURS[relationshipState.stage] * HOURS_MS;
+  let minimumMs = BASE_MINIMUM_MS;
 
   // Apply backoff for ignored outreaches
   if (!relationshipState.lastOutreachResponded) {
-    if (relationshipState.consecutiveIgnoredOutreaches >= 2) {
-      minimumMs = Math.max(minimumMs, BACKOFF_CONSECUTIVE_HOURS * HOURS_MS);
+    if (relationshipState.consecutiveIgnoredOutreaches >= 3) {
+      minimumMs = BACKOFF_3_PLUS_IGNORED_MS;
+    } else if (relationshipState.consecutiveIgnoredOutreaches >= 2) {
+      minimumMs = BACKOFF_2_IGNORED_MS;
     } else {
-      minimumMs = Math.max(minimumMs, BACKOFF_SINGLE_HOURS * HOURS_MS);
+      minimumMs = BACKOFF_1_IGNORED_MS;
     }
   }
 

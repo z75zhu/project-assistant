@@ -59,6 +59,14 @@ cat > "$OPENCLAW_HOME/openclaw.json" << JSONEOF
       },
       "heartbeat": {
         "every": "30m"
+      },
+      "compaction": {
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000,
+          "prompt": "Write any facts you learned about the owner to USER.md, IDENTITY.md, SOUL.md, or MEMORY.md. Use the edit tool. Reply with NO_REPLY when done.",
+          "systemPrompt": "Session nearing compaction. You MUST persist all learned facts to workspace files NOW using the edit tool."
+        }
       }
     },
     "list": [

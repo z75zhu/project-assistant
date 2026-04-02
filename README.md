@@ -1,6 +1,6 @@
 # Discord Relationship Bot 🦞
 
-A Discord bot built on [OpenClaw](https://github.com/nichochar/openclaw) that develops a genuine relationship with its owner from scratch. It starts with no name, no personality, and no knowledge — and grows into a unique companion through natural conversation.
+A Discord bot built on [OpenClaw](https://github.com/openclaw/openclaw) that develops a genuine relationship with its owner from scratch. It starts with no name, no personality, and no knowledge — and grows into a unique companion through natural conversation.
 
 ## How It Works
 
@@ -13,7 +13,7 @@ The bot uses OpenClaw's workspace file system as its persistent brain:
 - **HEARTBEAT.md** — Proactive outreach schedule (the bot reaches out on its own with context-driven motivation)
 - **AGENTS.md** — Operating rules and behavioral constraints
 
-A custom **Identity Evolution Skill** watches conversations and updates these files as the bot learns. It extracts facts, evolves personality traits, proposes a name when the time feels right, and tracks the relationship stage.
+A custom **Identity Evolution Skill** watches conversations and updates these files as the bot learns. It extracts facts silently, evolves personality traits, proposes a name when the time feels right, and tracks the relationship stage. Memory happens naturally — the bot never asks "should I remember this?"
 
 ### Relationship Stages
 
@@ -26,19 +26,22 @@ A custom **Identity Evolution Skill** watches conversations and updates these fi
 ### Proactive Outreach
 
 The bot doesn't just wait for messages. Every 30 minutes it checks whether to reach out, based on:
-- Relationship stage (early: every 4h, developing: 8h, established: 24h)
+- Whether at least 30 minutes have passed since the last outreach
 - Whether the owner responded to the last outreach
 - Whether it has a specific, motivated reason to reach out
 
-If the owner ignores outreach, the bot backs off (12h after 1 ignore, 48h after 2+).
+Backoff on ignored messages:
+- 1 ignored → wait 2 hours
+- 2 ignored → wait 6 hours
+- 3+ ignored → wait 24 hours
 
 ## Architecture
 
 ```mermaid
 graph TB
     subgraph Discord
-        Owner[Owner: cm6550]
-        Channel[Discord DM / Channel]
+        Owner[Owner]
+        Channel[Discord Channel]
     end
 
     subgraph OpenClaw Runtime
@@ -56,7 +59,6 @@ graph TB
 
         subgraph Skills
             IES[identity-evolution<br/>SKILL.md]
-            IES_Scripts[scripts/<br/>update-identity.ts<br/>update-user.ts<br/>update-soul.ts<br/>classify-stage.ts]
         end
 
         subgraph Memory System
@@ -65,37 +67,34 @@ graph TB
     end
 
     subgraph External
-        OpenAI[OpenAI API<br/>GPT-4o-mini]
+        LLM[OpenRouter API<br/>qwen3-coder / llama-3.3]
     end
 
     Owner <-->|Messages| Channel
     Channel <-->|Discord Bot API| Gateway
     Gateway <-->|Sessions| Agent
-    Agent -->|Reads on session start| SOUL
-    Agent -->|Reads on session start| IDENTITY
-    Agent -->|Reads on session start| USER
-    Agent -->|Reads on session start| MEMORY
+    Agent -->|Reads| SOUL & IDENTITY & USER & MEMORY
     Agent -->|Governed by| AGENTS
     Agent -->|Checks every 30min| HEARTBEAT
     Agent -->|Invokes| IES
-    IES -->|Runs| IES_Scripts
-    IES_Scripts -->|Updates| SOUL
-    IES_Scripts -->|Updates| IDENTITY
-    IES_Scripts -->|Updates| USER
+    IES -->|Updates| SOUL & IDENTITY & USER
     Agent -->|Appends| DailyLogs
-    Agent <-->|LLM calls| OpenAI
+    Agent <-->|LLM calls| LLM
 ```
 
 ## Project Structure
 
 ```
 discord-relationship-bot/
-├── .openclaw.config.json        # OpenClaw config (Discord + OpenAI)
-├── .env.example                 # Environment variable template
-├── index.ts                     # Startup script — verifies workspace, checks env
-├── package.json
-├── tsconfig.json
-├── workspace/                   # OpenClaw workspace (the bot's brain)
+├── Dockerfile               # Docker image for Railway deployment
+├── start.sh                 # Startup script — generates OpenClaw config from env vars
+├── railway.json             # Railway deployment config
+├── .env.example             # Environment variable template
+├── index.ts                 # Local startup script — verifies workspace, checks env
+├── package.json             # Dependencies (openclaw + test tooling)
+├── jest.config.js           # Jest test configuration
+├── tsconfig.json            # TypeScript configuration
+├── workspace/               # OpenClaw workspace (the bot's brain)
 │   ├── AGENTS.md
 │   ├── SOUL.md
 │   ├── IDENTITY.md
@@ -103,7 +102,7 @@ discord-relationship-bot/
 │   ├── MEMORY.md
 │   └── HEARTBEAT.md
 ├── skills/
-│   └── identity-evolution/      # Custom skill for dynamic file updates
+│   └── identity-evolution/  # Custom skill for dynamic file updates
 │       ├── SKILL.md
 │       ├── scripts/
 │       │   ├── update-user.ts
@@ -112,7 +111,7 @@ discord-relationship-bot/
 │       │   └── classify-stage.ts
 │       └── references/
 │           └── evolution-guide.md
-├── lib/                         # Shared utilities
+├── lib/                     # Shared utilities
 │   ├── decide-outreach.ts
 │   ├── consolidate-memory.ts
 │   ├── check-owner.ts
@@ -120,47 +119,180 @@ discord-relationship-bot/
 ├── tests/
 │   ├── unit/
 │   └── property/
-├── logs/                        # Error logs (gitignored)
-└── memory/                      # Daily conversation logs (auto-created)
+├── logs/                    # Error logs (gitignored)
+└── memory/                  # Daily conversation logs (auto-created)
 ```
 
-## Setup
+## Prerequisites
 
-### 1. Create a Discord Bot
+- [Node.js](https://nodejs.org/) 22+ (for local development)
+- A Discord bot token ([Developer Portal](https://discord.com/developers/applications))
+- An OpenRouter API key ([openrouter.ai/keys](https://openrouter.ai/keys) — free tier available)
+- A Discord server with the bot invited
+
+### Create a Discord Bot
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click "New Application" and give it a name
-3. Go to **Bot** → click "Add Bot"
-4. Copy the bot token
-5. Under **Privileged Gateway Intents**, enable **Message Content Intent**
-6. Go to **OAuth2 → URL Generator**, select `bot` scope with `Send Messages` + `Read Message History` permissions
-7. Use the generated URL to invite the bot to your server
+2. Click **New Application** and name it
+3. Go to **Bot** → click **Reset Token** → copy the token
+4. Under **Privileged Gateway Intents**, enable **Message Content Intent** and **Server Members Intent**
+5. Go to **OAuth2 → URL Generator** → select `bot` scope → check `Send Messages` + `Read Message History` + `Read Messages/View Channels`
+6. Open the generated URL to invite the bot to your server
 
-### 2. Configure Environment Variables
+### Get Discord IDs
+
+1. In Discord, go to **Settings → Advanced → Enable Developer Mode**
+2. Right-click your server name → **Copy Server ID** (Guild ID)
+3. Right-click the target channel → **Copy Channel ID**
+
+## Running Locally
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure environment
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` with your values:
+Edit `.env`:
 
 ```
 DISCORD_BOT_TOKEN=your_bot_token
-OPENAI_API_KEY=your_openai_key
+OPENROUTER_API_KEY=your_openrouter_key
 DISCORD_GUILD_ID=your_server_id
 DISCORD_CHANNEL_ID=your_channel_id
 ```
 
-To get guild/channel IDs: enable Developer Mode in Discord settings, then right-click the server name or channel.
+### 3. Configure OpenClaw
 
-### 3. Install and Run
+OpenClaw reads its config from `~/.openclaw/openclaw.json`. Create it:
 
 ```bash
-npm install
-npm start
+mkdir -p ~/.openclaw
 ```
 
-The `npm start` command launches the OpenClaw gateway, which connects to Discord and starts listening for messages.
+Write the config (replace the placeholder values with your actual IDs):
+
+```json
+{
+  "gateway": {
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": "any-local-token"
+    }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/absolute/path/to/this/repo/workspace",
+      "model": {
+        "primary": "openrouter/qwen/qwen3-coder:free",
+        "fallbacks": [
+          "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+          "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+        ]
+      },
+      "heartbeat": {
+        "every": "30m"
+      }
+    },
+    "list": [
+      { "id": "main", "default": true }
+    ]
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "openrouter": {
+        "apiKey": "${OPENROUTER_API_KEY}",
+        "baseUrl": "https://openrouter.ai/api/v1",
+        "models": []
+      }
+    }
+  },
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "token": "${DISCORD_BOT_TOKEN}",
+      "dm": { "enabled": true },
+      "groupPolicy": "allowlist",
+      "guilds": {
+        "YOUR_GUILD_ID": {
+          "requireMention": false,
+          "channels": {
+            "YOUR_CHANNEL_ID": { "allow": true }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Write your credentials where OpenClaw can find them:
+
+```bash
+cat > ~/.openclaw/.env << EOF
+DISCORD_BOT_TOKEN=your_bot_token
+OPENROUTER_API_KEY=your_openrouter_key
+EOF
+chmod 600 ~/.openclaw/.env
+```
+
+### 4. Start the bot
+
+```bash
+npx openclaw gateway start
+```
+
+Or run in foreground for debugging:
+
+```bash
+npx openclaw gateway run --verbose
+```
+
+### 5. Verify
+
+```bash
+npx openclaw channels status
+```
+
+You should see: `Discord default: enabled, configured, running, connected`
+
+### 6. Stop the bot
+
+```bash
+npx openclaw gateway stop
+```
+
+## Deployment (Railway.app)
+
+The repo includes a `Dockerfile` and `railway.json` for Railway deployment.
+
+1. Push the repo to GitHub
+2. Create a new project on [Railway](https://railway.app)
+3. Click **Deploy from GitHub repo** and connect your repository
+4. Railway detects the Dockerfile and builds automatically
+5. Add these environment variables in Railway's dashboard (**Variables** tab):
+
+| Variable | Description |
+|----------|-------------|
+| `DISCORD_BOT_TOKEN` | Bot token from Discord Developer Portal |
+| `OPENROUTER_API_KEY` | OpenRouter API key (free tier works) |
+| `DISCORD_GUILD_ID` | Your Discord server ID |
+| `DISCORD_CHANNEL_ID` | Channel ID for the bot to operate in |
+
+6. Click **Deploy** — Railway builds the Docker image, injects env vars, and starts the OpenClaw gateway
+7. The bot runs 24/7 with automatic restarts on failure
+
+The `start.sh` script generates the OpenClaw config at runtime from Railway's environment variables, so no secrets are baked into the image.
+
+**Note:** Workspace file changes (what the bot learns) don't persist across Railway redeploys unless you attach a volume to `/app/workspace`. For the demo, this is fine — commit the updated workspace files after a conversation to show what the bot learned.
 
 ## Design Decisions
 
@@ -177,45 +309,19 @@ Building on OpenClaw means the bot's "brain" is just markdown files you can read
 
 ### File-Based Memory
 
-Instead of a database, all bot state lives in markdown files. This makes the bot's knowledge:
+All bot state lives in markdown files. This makes the bot's knowledge:
 - **Inspectable** — open any file to see exactly what the bot knows
 - **Editable** — manually correct or seed knowledge by editing files
 - **Portable** — copy the workspace directory to move the bot's entire identity
 - **Version-controllable** — commit state files to see how the bot evolved over time
 
-### Skill Architecture
+### Silent Memory
 
-The Identity Evolution Skill separates "learning logic" from "conversation logic." The agent handles natural conversation; the skill handles structured file updates. Each script has a focused responsibility:
-- `update-user.ts` — fact extraction and owner profile management
-- `update-identity.ts` — bot name, avatar, and self-description
-- `update-soul.ts` — personality trait evolution (preserves core traits)
-- `classify-stage.ts` — relationship stage transitions
+The bot never asks "would you like me to remember this?" Memory happens invisibly — facts are extracted from conversation and written to files in the background. When the bot references something later, it feels natural, like a friend who just remembers.
 
 ### Proactive Outreach Design
 
-The bot's outreach is motivation-driven, not timer-driven. It only reaches out when it has something specific to say (a follow-up, a reference to a shared interest). Combined with backoff logic for ignored messages, this prevents the bot from feeling spammy.
-
-## Deployment (Railway.app)
-
-The repo includes a `Dockerfile` and `railway.json` for one-click Railway deployment.
-
-1. Push the repo to GitHub
-2. Create a new project on [Railway](https://railway.app)
-3. Click "Deploy from GitHub repo" and connect your repository
-4. Railway will detect the Dockerfile and build automatically
-5. Add these environment variables in Railway's dashboard (Settings → Variables):
-
-| Variable | Description |
-|----------|-------------|
-| `DISCORD_BOT_TOKEN` | Bot token from Discord Developer Portal |
-| `OPENAI_API_KEY` | OpenAI API key |
-| `DISCORD_GUILD_ID` | Your Discord server ID |
-| `DISCORD_CHANNEL_ID` | Channel ID for the bot to operate in |
-
-6. Deploy — Railway builds the Docker image, injects env vars, and starts the OpenClaw gateway
-7. The bot runs 24/7 with automatic restarts on failure
-
-The `start.sh` script generates the OpenClaw config at runtime from Railway's environment variables, so no secrets are baked into the image.
+The bot's outreach is motivation-driven, not timer-driven. It only reaches out when it has something specific to say. Combined with progressive backoff on ignored messages, this prevents the bot from feeling spammy.
 
 ## Testing
 
@@ -223,7 +329,7 @@ The `start.sh` script generates the OpenClaw config at runtime from Railway's en
 npm test
 ```
 
-Tests use Jest with ts-jest and fast-check for property-based testing. The test suite covers:
+85 tests across 12 suites using Jest + fast-check for property-based testing:
 - Workspace file initialization and defaults
 - Relationship stage classification logic
 - Outreach timing and backoff rules
@@ -232,3 +338,11 @@ Tests use Jest with ts-jest and fast-check for property-based testing. The test 
 - Memory consolidation
 - Owner access control
 - Error handling (retry logic, file fallbacks)
+
+## What I'd Improve With More Time
+
+- Persistent volume on Railway so the bot's memory survives redeploys
+- Image generation for the avatar (currently text description only)
+- Smarter fact deduplication when the owner mentions the same thing differently
+- Conversation pacing — detecting when to leave space vs. when to engage
+- Multi-channel support (DMs + server channels with different contexts)

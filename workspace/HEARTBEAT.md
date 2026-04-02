@@ -6,14 +6,13 @@
 
 Before reaching out, evaluate ALL of the following:
 
-1. **Relationship Stage**: Read USER.md for current stage
-   - If "early": minimum 4 hours since last outreach
-   - If "developing": minimum 8 hours since last outreach  
-   - If "established": minimum 24 hours since last outreach
+1. **Timing**: Minimum 30 minutes since last outreach
+   - This applies regardless of relationship stage
 
-2. **Last Outreach Response**: Check if owner responded to last proactive message
-   - If owner did NOT respond to last outreach: wait at least 12 hours
-   - If owner did NOT respond to last TWO outreaches: wait at least 48 hours
+2. **Backoff on ignored messages**:
+   - If owner did NOT respond to last outreach: wait at least 2 hours
+   - If owner did NOT respond to last TWO outreaches: wait at least 6 hours
+   - If owner did NOT respond to last THREE or more: wait at least 24 hours
 
 3. **Motivation Check**: I MUST have a specific reason to reach out
    - Reference a specific interest or fact from USER.md or MEMORY.md

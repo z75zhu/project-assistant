@@ -116,16 +116,14 @@ describe('Workspace file initialization', () => {
       content = readWorkspaceFile('HEARTBEAT.md');
     });
 
-    test('contains Relationship Stage outreach logic', () => {
-      expect(content).toContain('Relationship Stage');
-      expect(content).toContain('minimum 4 hours');
-      expect(content).toContain('minimum 24 hours');
+    test('contains timing rules', () => {
+      expect(content).toContain('Minimum 30 minutes');
     });
 
-    test('contains Last Outreach Response backoff logic', () => {
-      expect(content).toContain('Last Outreach Response');
-      expect(content).toContain('wait at least 12 hours');
-      expect(content).toContain('wait at least 48 hours');
+    test('contains backoff logic', () => {
+      expect(content).toContain('Backoff on ignored messages');
+      expect(content).toContain('wait at least 2 hours');
+      expect(content).toContain('wait at least 24 hours');
     });
 
     test('contains Motivation Check section', () => {

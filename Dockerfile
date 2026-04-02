@@ -9,9 +9,9 @@ RUN npm install -g openclaw@latest @buape/carbon@0.0.0-beta-20260327000044
 
 WORKDIR /app
 
-# Copy workspace, skills, and lib
+# Copy workspace (includes skills inside workspace/skills/) and lib
 COPY workspace/ ./workspace/
-COPY skills/ ./skills/
+COPY skills/ ./workspace/skills/
 COPY lib/ ./lib/
 
 # Create directories OpenClaw needs
