@@ -13,7 +13,15 @@ The bot uses OpenClaw's workspace file system as its persistent brain:
 - **HEARTBEAT.md** — Proactive outreach schedule (the bot reaches out on its own with context-driven motivation)
 - **AGENTS.md** — Operating rules and behavioral constraints
 
-A custom **Identity Evolution Skill** watches conversations and updates these files as the bot learns. It extracts facts silently, evolves personality traits, proposes a name when the time feels right, and tracks the relationship stage. Memory happens naturally — the bot never asks "should I remember this?"
+The bot's memory works through a read/write lifecycle that runs every conversation turn:
+
+1. **Read before responding** — Before generating any reply, the agent reads ALL workspace files (SOUL.md, IDENTITY.md, USER.md, MEMORY.md) to restore full context. The agent's memory resets between sessions, so this read step is what gives it continuity.
+2. **Generate response** — With full context loaded, the agent responds naturally, referencing past conversations and owner details.
+3. **Write after responding** — After every reply, the Identity Evolution Skill updates the relevant workspace files — new facts go to USER.md, personality shifts go to SOUL.md, identity changes go to IDENTITY.md, and transient observations go to MEMORY.md.
+
+This read-before-respond, write-after-respond cycle is what makes the bot's memory work. Without it, the bot would forget everything between sessions.
+
+A custom **Identity Evolution Skill** drives the write side of this cycle. It extracts facts silently, evolves personality traits, proposes a name when the time feels right, and tracks the relationship stage. Memory happens naturally — the bot never asks "should I remember this?"
 
 ### Relationship Stages
 
@@ -73,11 +81,11 @@ graph TB
     Owner <-->|Messages| Channel
     Channel <-->|Discord Bot API| Gateway
     Gateway <-->|Sessions| Agent
-    Agent -->|Reads| SOUL & IDENTITY & USER & MEMORY
+    Agent -->|Reads before every response| SOUL & IDENTITY & USER & MEMORY
     Agent -->|Governed by| AGENTS
     Agent -->|Checks every 30min| HEARTBEAT
-    Agent -->|Invokes| IES
-    IES -->|Updates| SOUL & IDENTITY & USER
+    Agent -->|Invokes after every response| IES
+    IES -->|Updates after every turn| SOUL & IDENTITY & USER
     Agent -->|Appends| DailyLogs
     Agent <-->|LLM calls| LLM
 ```
@@ -100,25 +108,14 @@ discord-relationship-bot/
 │   ├── IDENTITY.md
 │   ├── USER.md
 │   ├── MEMORY.md
-│   └── HEARTBEAT.md
-├── skills/
-│   └── identity-evolution/  # Custom skill for dynamic file updates
-│       ├── SKILL.md
-│       ├── scripts/
-│       │   ├── update-user.ts
-│       │   ├── update-identity.ts
-│       │   ├── update-soul.ts
-│       │   └── classify-stage.ts
-│       └── references/
-│           └── evolution-guide.md
+│   ├── HEARTBEAT.md
+│   └── skills/
+│       └── identity-evolution/  # Custom skill for dynamic file updates
+│           └── SKILL.md
 ├── lib/                     # Shared utilities
-│   ├── decide-outreach.ts
-│   ├── consolidate-memory.ts
-│   ├── check-owner.ts
 │   └── error-handler.ts
 ├── tests/
-│   ├── unit/
-│   └── property/
+│   └── unit/
 ├── logs/                    # Error logs (gitignored)
 └── memory/                  # Daily conversation logs (auto-created)
 ```
@@ -255,14 +252,8 @@ The bot's outreach is motivation-driven, not timer-driven. It only reaches out w
 npm test
 ```
 
-85 tests across 12 suites using Jest + fast-check for property-based testing:
+36 tests across 2 suites using Jest:
 - Workspace file initialization and defaults
-- Relationship stage classification logic
-- Outreach timing and backoff rules
-- Fact extraction and file preservation
-- Core personality trait preservation
-- Memory consolidation
-- Owner access control
 - Error handling (retry logic, file fallbacks)
 
 ## What I'd Improve With More Time

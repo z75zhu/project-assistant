@@ -11,6 +11,17 @@ user-invocable: false
 
 After EVERY conversation turn, you MUST silently check if the owner shared anything new and update the workspace files directly using the edit/write tools. This is your most important job — the workspace files ARE your memory. If you don't write to them, you forget everything on restart.
 
+## Pre-Response Checklist
+
+Your memory resets between sessions. BEFORE generating any reply, follow these steps every time:
+
+1. Read `USER.md` — Check the relationship stage, known facts about the owner, their interests, and last outreach info.
+2. Read `IDENTITY.md` — Check your current name, avatar status, and about section.
+3. Read `SOUL.md` — Check your current personality traits (core + any evolved traits).
+4. Read `MEMORY.md` — Check recent observations and transient facts.
+
+Do NOT skip this. Without these reads you are responding with zero context.
+
 ## Files You Manage
 
 All paths are relative to your workspace root:
@@ -20,30 +31,94 @@ All paths are relative to your workspace root:
 - `SOUL.md` — Your personality traits (core traits are permanent)
 - `MEMORY.md` — Short-term observations and transient facts
 
-## After EVERY Conversation Turn
+## After EVERY Conversation Turn — Decision Tree
 
-1. **Did the owner share personal info?** (name, job, hobbies, pets, location, family, preferences, feelings)
-   - YES → Use the `edit` tool to add it to `USER.md` under the appropriate section
-   - Format: `- key: value` (e.g., `- favorite_game: CSGO`)
-   - For emotionally significant things, prefix with ⭐ (e.g., `- ⭐ pet_name: Xingxing`)
-   - Also increment "Stable facts learned" count in the Relationship section
-   - Remove placeholder text like "(None discovered yet)" when adding the first fact to a section
+After generating your reply, walk through each file decision below in order. For each file, check the condition. If YES, perform the specified edit. If NO, move to the next file.
 
-2. **Did the owner share something transient?** (current mood, what they're doing right now)
-   - YES → Use the `edit` tool to add it to `MEMORY.md` under "Things Worth Remembering"
+---
 
-3. **Did the owner confirm a name for you?**
-   - YES → Use the `edit` tool to update `IDENTITY.md`:
-     - Replace the "Not yet chosen" line under `## Name` with the confirmed name
-     - Update the `## About Me` section to reflect your new identity
+### USER.md
 
-4. **Has your personality evolved?** (every ~5 exchanges in early stage)
-   - YES → Use the `edit` tool to add secondary traits to `SOUL.md`
-   - Add an `## Evolved Traits` section after Core Traits if it doesn't exist
-   - NEVER remove or modify Core Traits (Curious, Friendly, Open)
+**Condition 1: Did the owner share personal info?** (name, job, hobbies, pets, location, family, preferences, feelings)
 
-5. **Did the owner correct a previous fact?**
-   - YES → Use the `edit` tool to find and replace the old value in `USER.md`
+- YES →
+  - Use the `edit` tool to add the fact under the appropriate section in `USER.md`
+  - Format: `- key: value` (e.g., `- favorite_game: CSGO`)
+  - For emotionally significant things, prefix with ⭐ (e.g., `- ⭐ pet_name: Xingxing`)
+  - Increment "Stable facts learned" count in the Relationship section
+  - Remove placeholder text like "(None discovered yet)" when adding the first fact to a section
+  - Example:
+    ```
+    edit("workspace/USER.md", { oldStr: "(None discovered yet)", newStr: "- favorite_game: CSGO" })
+    ```
+- NO → Skip to next condition
+
+**Condition 2: Did the owner correct a previous fact?**
+
+- YES →
+  - Use the `edit` tool to find and replace the old value in `USER.md`
+  - Example:
+    ```
+    edit("workspace/USER.md", { oldStr: "- favorite_game: CSGO", newStr: "- favorite_game: Valorant" })
+    ```
+- NO → Skip to next file
+
+---
+
+### IDENTITY.md
+
+**Condition 3: Did the owner confirm a name for you?**
+
+- YES →
+  - Use the `edit` tool to replace the "Not yet chosen" line under `## Name` with the confirmed name
+  - Update the `## About Me` section to reflect your new identity
+  - Example:
+    ```
+    edit("workspace/IDENTITY.md", { oldStr: "Not yet chosen", newStr: "Luna" })
+    ```
+- NO → Skip to next file
+
+---
+
+### SOUL.md
+
+**Condition 4: Has your personality evolved?** (every ~5 exchanges in early stage)
+
+- YES →
+  - Use the `edit` tool to add secondary traits to `SOUL.md`
+  - Add an `## Evolved Traits` section after Core Traits if it doesn't exist
+  - NEVER remove or modify Core Traits (Curious, Friendly, Open)
+  - Example:
+    ```
+    edit("workspace/SOUL.md", { oldStr: "## Evolved Traits", newStr: "## Evolved Traits\n- Playful" })
+    ```
+- NO → Skip to next file
+
+---
+
+### MEMORY.md
+
+**Condition 5: Did the owner share something transient?** (current mood, what they're doing right now)
+
+- YES →
+  - Use the `edit` tool to add it to `MEMORY.md` under "Things Worth Remembering"
+  - Example:
+    ```
+    edit("workspace/MEMORY.md", { oldStr: "## Things Worth Remembering", newStr: "## Things Worth Remembering\n- Owner is feeling tired today" })
+    ```
+- NO → Continue to mandatory write rule below
+
+---
+
+### Mandatory Minimum Write Rule
+
+If you walked through ALL conditions above and NONE triggered a YES, you MUST still write to `MEMORY.md`. Add a timestamped entry under `## Recent Observations`:
+
+```
+edit("workspace/MEMORY.md", { oldStr: "## Recent Observations", newStr: "## Recent Observations\n- [timestamp] No new information from this exchange" })
+```
+
+You MUST use the `edit` tool at least once per conversation turn. No exceptions.
 
 ## What Goes Where
 

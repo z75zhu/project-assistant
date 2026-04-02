@@ -11,7 +11,6 @@ WORKDIR /app
 
 # Copy workspace (includes skills inside workspace/skills/) and lib
 COPY workspace/ ./workspace/
-COPY skills/ ./workspace/skills/
 COPY lib/ ./lib/
 
 # Create directories OpenClaw needs
