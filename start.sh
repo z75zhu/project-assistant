@@ -51,10 +51,10 @@ cat > "$OPENCLAW_HOME/openclaw.json" << JSONEOF
     "defaults": {
       "workspace": "/app/workspace",
       "model": {
-        "primary": "openrouter/qwen/qwen3-coder:free",
+        "primary": "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
         "fallbacks": [
-          "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
-          "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+          "openrouter/meta-llama/llama-3.3-70b-instruct:free",
+          "openrouter/google/gemma-3-27b-it:free"
         ]
       },
       "heartbeat": {
