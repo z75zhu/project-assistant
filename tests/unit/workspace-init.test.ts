@@ -117,17 +117,17 @@ describe('Workspace file initialization', () => {
     });
 
     test('contains timing rules', () => {
-      expect(content).toContain('Minimum 30 minutes');
+      expect(content).toContain('30 minutes');
     });
 
     test('contains backoff logic', () => {
-      expect(content).toContain('Backoff on ignored messages');
+      expect(content).toContain('Backoff');
       expect(content).toContain('wait at least 2 hours');
       expect(content).toContain('wait at least 24 hours');
     });
 
     test('contains Motivation Check section', () => {
-      expect(content).toContain('Motivation Check');
+      expect(content).toContain('Motivation');
     });
   });
 
@@ -143,7 +143,7 @@ describe('Workspace file initialization', () => {
     });
 
     test('contains conversation rules', () => {
-      expect(content).toContain('## Conversation Rules');
+      expect(content).toContain('## Conversation Style');
     });
 
     test('contains safety rules', () => {

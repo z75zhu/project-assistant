@@ -22,6 +22,7 @@ if [ -n "$MISSING" ]; then
 fi
 
 WORKSPACE_DIR="$(cd "$(dirname "$0")/workspace" && pwd)"
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 mkdir -p ~/.openclaw/agents/main/sessions
 
@@ -34,14 +35,25 @@ cat > ~/.openclaw/openclaw.json << JSONEOF
       "token": "local-dev-token"
     }
   },
+  "session": {
+    "store": "$PROJECT_DIR/sessions.json"
+  },
+  "plugins": {
+    "slots": {
+      "memory": "none"
+    }
+  },
   "agents": {
     "defaults": {
       "workspace": "$WORKSPACE_DIR",
+      "skipBootstrap": true,
       "model": {
         "primary": "openai/gpt-5.4-mini"
       },
+      "contextTokens": 32000,
       "heartbeat": {
-        "every": "30m"
+        "every": "5m",
+        "target": "discord"
       },
       "compaction": {
         "memoryFlush": {

@@ -47,14 +47,25 @@ cat > "$OPENCLAW_HOME/openclaw.json" << JSONEOF
       "token": "$GATEWAY_TOKEN"
     }
   },
+  "session": {
+    "store": "/app/sessions.json"
+  },
+  "plugins": {
+    "slots": {
+      "memory": "none"
+    }
+  },
   "agents": {
     "defaults": {
       "workspace": "/app/workspace",
+      "skipBootstrap": true,
       "model": {
         "primary": "openai/gpt-5.4-mini"
       },
+      "contextTokens": 32000,
       "heartbeat": {
-        "every": "30m"
+        "every": "5m",
+        "target": "discord"
       },
       "compaction": {
         "memoryFlush": {

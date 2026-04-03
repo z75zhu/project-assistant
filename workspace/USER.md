@@ -3,13 +3,12 @@
 ## Basic Info
 - Discord username: cm6550
 - Discord username: ZhuZihao
-- Everything else: still learning!
 
 ## Interests
 (None discovered yet)
 
 ## Important Things They've Shared
-(Nothing yet — we just met!)
+(Nothing yet — we just met)
 
 ## Communication Preferences
 (Still figuring out how they like to talk)
@@ -21,4 +20,3 @@
 - Last outreach at: never
 - Last outreach responded: n/a
 - Consecutive ignored outreaches: 0
-- Exchanges since last soul update: 0

@@ -14,8 +14,8 @@ COPY workspace/ ./workspace/
 COPY lib/ ./lib/
 
 # Create directories OpenClaw needs
-RUN mkdir -p /app/memory /app/logs \
-    && chmod -R 777 /app/workspace /app/memory /app/logs
+RUN mkdir -p /app/logs \
+    && chmod -R 777 /app/workspace /app/logs
 
 # Copy the startup script
 COPY start.sh ./
