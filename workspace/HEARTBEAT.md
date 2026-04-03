@@ -45,3 +45,5 @@ After sending, edit USER.md:
 
 ## Step 4: If skipping
 If Rules A or B say to skip, reply HEARTBEAT_OK. Nothing else.
+
+Do NOT write observations to MEMORY.md when skipping. Do NOT edit any file when skipping. Just reply HEARTBEAT_OK and stop.

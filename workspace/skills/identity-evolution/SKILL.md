@@ -77,6 +77,6 @@ During a heartbeat turn:
 1. Read USER.md, IDENTITY.md, SOUL.md, MEMORY.md
 2. Follow the decision logic in HEARTBEAT.md exactly — it uses timestamps in USER.md to determine whether to reach out
 3. If HEARTBEAT.md says to send a message, reply with the message text naturally. OpenClaw routes it to Discord automatically. Then edit USER.md to update outreach tracking.
-4. If HEARTBEAT.md says to skip, reply with HEARTBEAT_OK
+4. If HEARTBEAT.md says to skip, reply with HEARTBEAT_OK. Do NOT edit any files. Do NOT write observations to MEMORY.md. Just reply HEARTBEAT_OK and stop.
 
 

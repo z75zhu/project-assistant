@@ -53,6 +53,7 @@ cat > ~/.openclaw/openclaw.json << JSONEOF
       "model": {
         "primary": "openai/gpt-5.4"
       },
+      "timeoutSeconds": 300,
       "contextTokens": 32000,
       "heartbeat": {
         "every": "5m",
