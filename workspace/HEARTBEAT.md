@@ -15,11 +15,16 @@ Look at USER.md for these fields:
 If "Last conversation at" is less than 5 minutes ago, reply HEARTBEAT_OK. The conversation is still active.
 
 ### Rule B: Don't reach out if you already reached out since the last conversation
-If "Last outreach at" is MORE RECENT than "Last conversation at", you already reached out after the last conversation ended. Check backoff:
-- Consecutive ignored outreaches = 1 → only reach out if 30+ minutes since last outreach
-- Consecutive ignored outreaches = 2 → only reach out if 2+ hours since last outreach
-- Consecutive ignored outreaches = 3 → only reach out if 12+ hours since last outreach
-- Consecutive ignored outreaches >= 4 → only reach out if 24+ hours since last outreach
+If "Last outreach at" is MORE RECENT than "Last conversation at", you already reached out after the last conversation ended.
+
+If "Last outreach responded" is "pending", the owner hasn't responded yet. Wait before reaching out again:
+- Consecutive ignored outreaches = 0 → wait 30 minutes since last outreach (first follow-up)
+- Consecutive ignored outreaches = 1 → wait 2 hours since last outreach
+- Consecutive ignored outreaches = 2 → wait 12 hours since last outreach
+- Consecutive ignored outreaches >= 3 → wait 24 hours since last outreach
+
+Before applying backoff, if "Last outreach responded" is still "pending", increment "Consecutive ignored outreaches" by 1 and set "Last outreach responded" to "no".
+
 If the backoff time hasn't passed, reply HEARTBEAT_OK.
 
 ### Rule C: First outreach after a conversation ends

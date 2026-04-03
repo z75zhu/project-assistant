@@ -68,7 +68,8 @@ cat > "$OPENCLAW_HOME/openclaw.json" << JSONEOF
       "contextTokens": 32000,
       "heartbeat": {
         "every": "5m",
-        "target": "discord"
+        "target": "discord",
+        "to": "channel:$DISCORD_CHANNEL_ID"
       },
       "compaction": {
         "memoryFlush": {
