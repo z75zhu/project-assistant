@@ -63,7 +63,7 @@ cat > "$OPENCLAW_HOME/openclaw.json" << JSONEOF
       "workspace": "/app/workspace",
       "skipBootstrap": true,
       "model": {
-        "primary": "openai/gpt-5.4-mini"
+        "primary": "openai/gpt-5.4"
       },
       "contextTokens": 32000,
       "heartbeat": {

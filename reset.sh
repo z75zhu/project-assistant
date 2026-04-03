@@ -9,6 +9,10 @@ echo '{"sessions":{}}' > sessions.json 2>/dev/null || true
 echo '{"sessions":{}}' > ~/.openclaw/agents/main/sessions/sessions.json 2>/dev/null || true
 rm -f ~/.openclaw/agents/main/sessions/*.jsonl 2>/dev/null || true
 
+# Clear cron jobs
+mkdir -p ~/.openclaw/cron
+echo '{"version":1,"jobs":[]}' > ~/.openclaw/cron/jobs.json 2>/dev/null || true
+
 # Reset workspace files
 cat > workspace/SOUL.md << 'EOF'
 # Soul

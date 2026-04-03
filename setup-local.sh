@@ -51,7 +51,7 @@ cat > ~/.openclaw/openclaw.json << JSONEOF
       "workspace": "$WORKSPACE_DIR",
       "skipBootstrap": true,
       "model": {
-        "primary": "openai/gpt-5.4-mini"
+        "primary": "openai/gpt-5.4"
       },
       "contextTokens": 32000,
       "heartbeat": {
