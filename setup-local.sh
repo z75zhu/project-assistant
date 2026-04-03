@@ -43,6 +43,9 @@ cat > ~/.openclaw/openclaw.json << JSONEOF
       "memory": "none"
     }
   },
+  "cron": {
+    "enabled": true
+  },
   "agents": {
     "defaults": {
       "workspace": "$WORKSPACE_DIR",

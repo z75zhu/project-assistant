@@ -55,6 +55,9 @@ cat > "$OPENCLAW_HOME/openclaw.json" << JSONEOF
       "memory": "none"
     }
   },
+  "cron": {
+    "enabled": true
+  },
   "agents": {
     "defaults": {
       "workspace": "/app/workspace",
@@ -123,6 +126,12 @@ echo "✓ Config written to $OPENCLAW_HOME/openclaw.json"
 echo "✓ Workspace: /app/workspace"
 echo "✓ Model: openai/gpt-5.4-mini"
 echo "✓ Gateway port: ${PORT:-18789}"
+
+# Clear stale sessions on startup
+echo '{"sessions":{}}' > "$OPENCLAW_HOME/agents/main/sessions/sessions.json"
+rm -f "$OPENCLAW_HOME/agents/main/sessions/"*.jsonl 2>/dev/null || true
+echo "✓ Sessions cleared"
+
 echo "✓ Starting OpenClaw gateway..."
 
 # Start the gateway

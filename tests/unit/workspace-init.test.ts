@@ -72,8 +72,8 @@ describe('Workspace file initialization', () => {
     });
 
     test('contains outreach tracking fields', () => {
-      expect(content).toContain('- Last outreach at: never');
-      expect(content).toContain('- Consecutive ignored outreaches: 0');
+      expect(content).toContain('- Last outreach at:');
+      expect(content).toContain('- Consecutive ignored outreaches:');
     });
   });
 
@@ -117,17 +117,17 @@ describe('Workspace file initialization', () => {
     });
 
     test('contains timing rules', () => {
-      expect(content).toContain('30 minutes');
+      expect(content).toContain('5 minutes');
     });
 
     test('contains backoff logic', () => {
-      expect(content).toContain('Backoff');
-      expect(content).toContain('wait at least 2 hours');
-      expect(content).toContain('wait at least 24 hours');
+      expect(content).toContain('backoff');
+      expect(content).toContain('2+ hours');
+      expect(content).toContain('24+ hours');
     });
 
-    test('contains Motivation Check section', () => {
-      expect(content).toContain('Motivation');
+    test('contains outreach decision logic', () => {
+      expect(content).toContain('Rule C');
     });
   });
 

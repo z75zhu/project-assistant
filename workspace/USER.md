@@ -17,6 +17,7 @@
 - Stage: early
 - Sessions completed: 0
 - Stable facts learned: 0
+- Last conversation at: never
 - Last outreach at: never
 - Last outreach responded: n/a
 - Consecutive ignored outreaches: 0

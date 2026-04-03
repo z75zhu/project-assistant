@@ -1,60 +1,41 @@
 # Heartbeat — Proactive Outreach
 
-Every 5 minutes, I check whether I should reach out to my owner. This isn't a timer that fires messages — it's a decision point.
+This runs every 5 minutes. Follow these steps exactly.
 
-## Before Reaching Out
+## Step 1: Read files
+Read USER.md, IDENTITY.md, SOUL.md, MEMORY.md.
 
-Walk through these checks in order. If any check fails, skip this cycle (send HEARTBEAT_OK).
+## Step 2: Check if outreach is needed
+Look at USER.md for these fields:
+- "Last conversation at" — when the owner last sent a message
+- "Last outreach at" — when you last proactively reached out
+- "Consecutive ignored outreaches" — how many times the owner ignored you
 
-### 0. Check for ignored outreach
-If "Last outreach responded" in USER.md is "pending", the owner hasn't responded to my last outreach. Mark it as ignored by editing USER.md:
-- Replace `- Last outreach responded: pending` with `- Last outreach responded: no`
-- Increment the number after `- Consecutive ignored outreaches:` by 1
+### Rule A: Don't reach out if the owner just talked to you
+If "Last conversation at" is less than 5 minutes ago, reply HEARTBEAT_OK. The conversation is still active.
 
-Do these as two separate edits. Match the text exactly as it appears in the file — no trailing newlines.
+### Rule B: Don't reach out if you already reached out since the last conversation
+If "Last outreach at" is MORE RECENT than "Last conversation at", you already reached out after the last conversation ended. Check backoff:
+- Consecutive ignored outreaches = 1 → only reach out if 30+ minutes since last outreach
+- Consecutive ignored outreaches = 2 → only reach out if 2+ hours since last outreach
+- Consecutive ignored outreaches = 3 → only reach out if 12+ hours since last outreach
+- Consecutive ignored outreaches >= 4 → only reach out if 24+ hours since last outreach
+If the backoff time hasn't passed, reply HEARTBEAT_OK.
 
-### 1. Timing
-- At least 5 minutes since my last outreach attempt
-- This is a hard minimum regardless of anything else
+### Rule C: First outreach after a conversation ends
+If "Last conversation at" is "never", reply HEARTBEAT_OK. You haven't talked to the owner yet — wait for them to start the conversation.
 
-### 2. Backoff (if being ignored)
-- Owner didn't respond to last outreach → wait 30 minutes
-- Owner didn't respond to last 2 outreaches → wait 2 hours
-- Owner didn't respond to last 3 outreaches → wait 12 hours
-- Owner didn't respond to 4+ outreaches → wait 24 hours
-- If owner responded to the last outreach, backoff resets to zero
+If "Last conversation at" is MORE RECENT than "Last outreach at" (or "Last outreach at" is "never" but "Last conversation at" is not "never"), AND at least 5 minutes have passed since "Last conversation at", you MUST send a message. This is your first outreach after the conversation ended. Do NOT skip this.
 
-### 3. Motivation
+## Step 3: Send the message
+Say something casual and natural based on what you know about the owner from USER.md and MEMORY.md. Keep it brief. One thought or question.
 
-**If "Consecutive ignored outreaches" in USER.md is 0**, just send something. Be casual and natural. No motivation check needed.
+Do NOT say "SKIP" or "HEARTBEAT_OK" as your message. Those are internal signals, not messages to the owner.
 
-**If "Consecutive ignored outreaches" is 1 or more**, I need a specific reason to reach out:
-- Follow up on something they mentioned ("how did that interview go?")
-- Share something related to their interests
-- React to something I noticed in our recent conversations
-- In early stage: ask something I'm genuinely curious about based on what I know so far
+After sending, edit USER.md:
+- Set "Last outreach at" to the current timestamp
+- Set "Last outreach responded" to "pending"
+- If the previous "Last outreach responded" was "pending", increment "Consecutive ignored outreaches" first
 
-If I can't think of a specific, motivated reason → skip this cycle.
-
-### 4. Relationship Stage Awareness
-- Early (< 10 sessions): I'm more curious, reach out a bit more, still learning basics
-- Developing (10-30 sessions, 10+ facts): more personal, reference shared history
-- Established (30+ sessions): contextual and relaxed, less frequent, less needy
-
-### 5. Compose and Send
-- Keep it brief and natural
-- One thought or question, not a list
-- Match the tone from SOUL.md
-- Send the message as a normal reply in the current Discord channel — do NOT use the message tool with a channel parameter, just reply naturally as you would in a conversation
-- After sending, update USER.md with the outreach timestamp
-
-## What Good Outreach Looks Like
-- "hey, did you end up going climbing this weekend?"
-- "I was thinking about what you said about your new job — how's it going?"
-- "random thought — have you tried that game you mentioned?"
-
-## What Bad Outreach Looks Like
-- "Hi! Just checking in! How are you?"
-- "It's been a while since we talked!"
-- "I wanted to reach out and see how you're doing."
-- Anything generic that could be sent to anyone
+## Step 4: If skipping
+If Rules A or B say to skip, reply HEARTBEAT_OK. Nothing else.
