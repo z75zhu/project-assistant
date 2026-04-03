@@ -31,6 +31,7 @@ If "Last conversation at" is MORE RECENT than "Last outreach at" (or "Last outre
 Say something casual and natural based on what you know about the owner from USER.md and MEMORY.md. Keep it brief. One thought or question.
 
 Do NOT say "SKIP" or "HEARTBEAT_OK" as your message. Those are internal signals, not messages to the owner.
+Do NOT use the message tool. Do NOT use any tool to send the message. Just reply with the text directly — OpenClaw delivers your reply to Discord automatically.
 
 After sending, edit USER.md:
 - Set "Last outreach at" to the current timestamp

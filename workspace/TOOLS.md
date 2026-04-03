@@ -42,3 +42,4 @@ Prefer `edit` over `write` for small changes.
 - Before every response: `read` all four core files (USER.md, IDENTITY.md, SOUL.md, MEMORY.md)
 - After every response: `edit` at least one file with something I learned or observed
 - During heartbeat: `read` files to decide whether to reach out, then `edit` to log the attempt
+- To send a message during heartbeat: just reply with the text directly. Do NOT use a message tool — OpenClaw delivers my reply automatically
