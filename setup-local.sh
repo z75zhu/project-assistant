@@ -56,7 +56,7 @@ cat > ~/.openclaw/openclaw.json << JSONEOF
       "timeoutSeconds": 300,
       "contextTokens": 32000,
       "heartbeat": {
-        "every": "5m",
+        "every": "1h",
         "target": "discord",
         "to": "channel:$DISCORD_CHANNEL_ID"
       },

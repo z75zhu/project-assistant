@@ -1,6 +1,6 @@
 # Heartbeat — Proactive Outreach
 
-This runs every 5 minutes. Follow these steps exactly.
+This runs every 1 hour. Follow these steps exactly.
 
 ## Step 1: Read files
 Read USER.md, IDENTITY.md, SOUL.md, MEMORY.md.
@@ -12,7 +12,7 @@ Look at USER.md for these fields:
 - "Consecutive ignored outreaches" — how many times the owner ignored you
 
 ### Rule A: Don't reach out if the owner just talked to you
-If "Last conversation at" is less than 5 minutes ago, reply HEARTBEAT_OK. The conversation is still active.
+If "Last conversation at" is less than 1 hour ago, reply HEARTBEAT_OK. The conversation is still active.
 
 ### Rule B: Don't reach out if you already reached out since the last conversation
 If "Last outreach at" is MORE RECENT than "Last conversation at", you already reached out after the last conversation ended.
@@ -30,7 +30,7 @@ If the backoff time hasn't passed, reply HEARTBEAT_OK.
 ### Rule C: First outreach after a conversation ends
 If "Last conversation at" is "never", reply HEARTBEAT_OK. You haven't talked to the owner yet — wait for them to start the conversation.
 
-If "Last conversation at" is MORE RECENT than "Last outreach at" (or "Last outreach at" is "never" but "Last conversation at" is not "never"), AND at least 5 minutes have passed since "Last conversation at", you MUST send a message. This is your first outreach after the conversation ended. Do NOT skip this.
+If "Last conversation at" is MORE RECENT than "Last outreach at" (or "Last outreach at" is "never" but "Last conversation at" is not "never"), AND at least 1 hour has passed since "Last conversation at", you MUST send a message. This is your first outreach after the conversation ended. Do NOT skip this.
 
 ## Step 3: Send the message
 Say something casual and natural based on what you know about the owner from USER.md and MEMORY.md. Keep it brief. One thought or question.
